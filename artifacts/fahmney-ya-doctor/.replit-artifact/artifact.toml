@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "Fahmney Ya Doctor"
+version = "1.0.0"
+id = "artifacts/fahmney-ya-doctor"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 20008
+
+[services.development]
+run = "pnpm --filter @workspace/fahmney-ya-doctor run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/fahmney-ya-doctor", "run", "build" ]
+publicDir = "artifacts/fahmney-ya-doctor/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "20008"
+BASE_PATH = "/"

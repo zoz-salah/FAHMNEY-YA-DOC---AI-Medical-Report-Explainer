@@ -1,0 +1,192 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: API specification
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: medical
+    description: Medical report analysis operations
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  /medical/reports:
+    get:
+      operationId: listReports
+      tags: [medical]
+      summary: List all medical reports
+      responses:
+        "200":
+          description: List of reports
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MedicalReport"
+
+  /medical/reports/{id}:
+    get:
+      operationId: getReport
+      tags: [medical]
+      summary: Get a specific medical report
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Medical report
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MedicalReport"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      operationId: deleteReport
+      tags: [medical]
+      summary: Delete a medical report
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /medical/stats:
+    get:
+      operationId: getMedicalStats
+      tags: [medical]
+      summary: Get stats about analyzed reports
+      responses:
+        "200":
+          description: Stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MedicalStats"
+
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
+
+    SuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+      required:
+        - success
+
+    MedicalReport:
+      type: object
+      properties:
+        id:
+          type: integer
+        filename:
+          type: string
+        summary:
+          type: string
+        diagnosis:
+          type: string
+        medications:
+          type: array
+          items:
+            type: string
+        followupInstructions:
+          type: array
+          items:
+            type: string
+        warnings:
+          type: array
+          items:
+            type: string
+        language:
+          type: string
+        createdAt:
+          type: string
+      required:
+        - id
+        - filename
+        - summary
+        - diagnosis
+        - medications
+        - followupInstructions
+        - warnings
+        - language
+        - createdAt
+
+    MedicalStats:
+      type: object
+      properties:
+        totalReports:
+          type: integer
+        recentReports:
+          type: integer
+        topLanguages:
+          type: array
+          items:
+            type: object
+            properties:
+              language:
+                type: string
+              count:
+                type: integer
+            required:
+              - language
+              - count
+      required:
+        - totalReports
+        - recentReports
+        - topLanguages
